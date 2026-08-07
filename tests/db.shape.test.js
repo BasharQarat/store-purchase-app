@@ -12,6 +12,7 @@ test("db module exports the expected functions", () => {
     "getAllPurchases",
     "savePurchase",
     "deletePurchase",
+    "seedItemsIfEmpty",
   ]) {
     assert.equal(typeof db[name], "function", `${name} should be exported as a function`);
   }

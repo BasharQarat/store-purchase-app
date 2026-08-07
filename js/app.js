@@ -1,4 +1,4 @@
-import { openDb } from "./db.js";
+import { openDb, seedItemsIfEmpty } from "./db.js";
 import { renderLogPurchase } from "./screens/logPurchase.js";
 import { renderToday } from "./screens/today.js";
 import { renderItems } from "./screens/items.js";
@@ -35,6 +35,7 @@ document.getElementById("tabs").addEventListener("click", (event) => {
 
 async function main() {
   db = await openDb();
+  await seedItemsIfEmpty(db);
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   }

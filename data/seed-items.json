@@ -1,0 +1,66 @@
+[
+  {
+    "id": "IT-0001",
+    "barcode": "380983618854",
+    "name": "شيبس ليز حار",
+    "category": "سناكس",
+    "price": 6000,
+    "purchase_price": 6000
+  },
+  {
+    "id": "IT-0002",
+    "barcode": "044232222216",
+    "name": "بيبسي علبة",
+    "category": "مشروبات",
+    "price": 4000,
+    "purchase_price": 4000
+  },
+  {
+    "id": "IT-0003",
+    "barcode": "628194936624",
+    "name": "خبز توست",
+    "category": "مخبوزات",
+    "price": 3000,
+    "purchase_price": 3000
+  },
+  {
+    "id": "IT-0004",
+    "barcode": "970911359661",
+    "name": "حليب صامد لتر",
+    "category": "ألبان",
+    "price": 5000,
+    "purchase_price": 5000
+  },
+  {
+    "id": "IT-0005",
+    "barcode": "760684953115",
+    "name": "بسكويت أوريو",
+    "category": "سناكس",
+    "price": 3500,
+    "purchase_price": 3500
+  },
+  {
+    "id": "IT-0006",
+    "barcode": "491281913285",
+    "name": "مرتديلا زينة",
+    "category": "غذائيات",
+    "price": 12000,
+    "purchase_price": 12000
+  },
+  {
+    "id": "IT-0007",
+    "barcode": "963355813787",
+    "name": "مرتديلا هنا",
+    "category": "غذائيات",
+    "price": 16000,
+    "purchase_price": 16000
+  },
+  {
+    "id": "IT-0008",
+    "barcode": "044726297065",
+    "name": "طون",
+    "category": "غذائيات",
+    "price": 13000,
+    "purchase_price": 13000
+  }
+]

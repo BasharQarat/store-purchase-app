@@ -74,3 +74,14 @@ export function deletePurchase(db, id) {
     req.onerror = () => reject(req.error);
   });
 }
+
+export async function seedItemsIfEmpty(db, seedUrl = "./data/seed-items.json") {
+  const existing = await getAllItems(db);
+  if (existing.length > 0) return;
+  const response = await fetch(seedUrl);
+  if (!response.ok) return;
+  const items = await response.json();
+  for (const item of items) {
+    await saveItem(db, item);
+  }
+}
