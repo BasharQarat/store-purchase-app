@@ -13,10 +13,17 @@ const SCREENS = {
 
 let db;
 
+function setActiveTabButton(name) {
+  document.querySelectorAll("#tabs button[data-screen]").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.screen === name);
+  });
+}
+
 async function showScreen(name) {
   for (const [key, screen] of Object.entries(SCREENS)) {
     screen.el.classList.toggle("active", key === name);
   }
+  setActiveTabButton(name);
   await SCREENS[name].render(SCREENS[name].el, db);
 }
 

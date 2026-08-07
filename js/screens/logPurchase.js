@@ -10,7 +10,7 @@ export async function renderLogPurchase(container, db) {
     <video id="scan-video" playsinline style="display:none; width:100%;"></video>
     <input id="search-input" type="text" placeholder="ابحث عن صنف..." />
     <ul id="search-results"></ul>
-    <div id="selected-item" style="display:none;">
+    <div id="selected-item" class="ticket" style="display:none;">
       <p id="selected-name"></p>
       <label>السعر <input id="price-input" type="number" step="0.01" /></label>
       <label>الكمية <input id="qty-input" type="number" step="1" value="1" /></label>

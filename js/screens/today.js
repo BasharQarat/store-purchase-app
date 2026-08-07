@@ -13,15 +13,15 @@ export async function renderToday(container, db) {
     <ul id="today-list">
       ${todays
         .map(
-          (p) => `<li data-id="${p.id}">
-            <span>${p.itemName} — ${p.quantity} × ${p.price} = ${p.amount}</span>
+          (p) => `<li data-id="${p.id}" class="ticket">
+            <span>${p.itemName} — ${p.quantity} × ${p.price} = <span class="amount">${p.amount}</span></span>
             <button class="edit-btn" data-id="${p.id}">تعديل</button>
             <button class="delete-btn" data-id="${p.id}">حذف</button>
           </li>`
         )
         .join("")}
     </ul>
-    <p>الإجمالي: ${total}</p>
+    <p>الإجمالي: <span class="amount">${total}</span></p>
     <button id="share-btn">مشاركة</button>
     <button id="clear-btn">مسح اليوم</button>
   `;

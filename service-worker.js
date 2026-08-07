@@ -1,9 +1,10 @@
-const CACHE_NAME = "store-purchase-app-v1";
+const CACHE_NAME = "store-purchase-app-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./css/styles.css",
+  "./css/fonts.css",
   "./js/app.js",
   "./js/db.js",
   "./js/logic.js",
@@ -13,6 +14,14 @@ const ASSETS = [
   "./js/screens/items.js",
   "./js/screens/labels.js",
   "./vendor/jsbarcode/JsBarcode.all.min.js",
+  "./vendor/fonts/cairo-700-arabic.woff2",
+  "./vendor/fonts/cairo-700-latin.woff2",
+  "./vendor/fonts/tajawal-400-arabic.woff2",
+  "./vendor/fonts/tajawal-400-latin.woff2",
+  "./vendor/fonts/tajawal-500-arabic.woff2",
+  "./vendor/fonts/tajawal-500-latin.woff2",
+  "./vendor/fonts/tajawal-700-arabic.woff2",
+  "./vendor/fonts/tajawal-700-latin.woff2",
   "./icons/icon.svg",
 ];
 
