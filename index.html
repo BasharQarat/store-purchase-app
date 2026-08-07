@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تسجيل مشتريات المحل</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="vendor/jsbarcode/JsBarcode.all.min.js"></script>
+</head>
+<body>
+  <main id="screens">
+    <section id="screen-log" class="screen active"></section>
+    <section id="screen-today" class="screen"></section>
+    <section id="screen-items" class="screen"></section>
+    <section id="screen-labels" class="screen"></section>
+  </main>
+  <div id="print-root" class="print-only"></div>
+  <nav id="tabs">
+    <button data-screen="log">تسجيل شراء</button>
+    <button data-screen="today">اليوم</button>
+    <button data-screen="items">الأصناف</button>
+    <button data-screen="labels">الملصقات</button>
+  </nav>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
