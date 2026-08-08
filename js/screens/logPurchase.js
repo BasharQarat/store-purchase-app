@@ -10,6 +10,11 @@ import {
 } from "../logic.js";
 import { isBarcodeScanSupported, startBarcodeScan } from "../scan.js";
 
+// Module-level so the in-progress cart survives switching tabs and back —
+// renderLogPurchase re-runs its whole body (including a fresh innerHTML)
+// every time the tab is shown, but this variable is not re-initialized.
+let cart = [];
+
 export async function renderLogPurchase(container, db) {
   const items = await getAllItems(db);
   container.innerHTML = `
@@ -29,7 +34,6 @@ export async function renderLogPurchase(container, db) {
     <p id="toast" style="display:none;"></p>
   `;
 
-  let cart = [];
   let lastUpdatedItemId = null;
 
   function renderCart() {
