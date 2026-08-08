@@ -1,5 +1,6 @@
 import { getAllPurchases, deletePurchase, savePurchase } from "../db.js";
 import { isToday, calcAmount, buildExportPayload } from "../logic.js";
+import { triggerDownload } from "../download.js";
 
 export async function renderToday(container, db) {
   const all = await getAllPurchases(db);
@@ -57,27 +58,16 @@ export async function renderToday(container, db) {
       `purchases-${new Date().toISOString().slice(0, 10)}.json`,
       { type: "application/json" }
     );
-    function downloadFile() {
-      const url = URL.createObjectURL(file);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = file.name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
         await navigator.share({ files: [file], title: "مشتريات اليوم" });
       } catch (err) {
         if (err.name !== "AbortError") {
-          downloadFile();
+          triggerDownload(file);
         }
       }
     } else {
-      downloadFile();
+      triggerDownload(file);
     }
   });
 
