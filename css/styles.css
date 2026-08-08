@@ -435,6 +435,30 @@ label {
   margin: 14px 0 6px;
 }
 
+/* Item add/edit form */
+
+.item-form-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#cancel-edit-btn {
+  background: transparent;
+  border-color: var(--ink-soft);
+  color: var(--ink-soft);
+}
+
+#cancel-edit-btn:hover {
+  background: var(--ink-soft);
+  color: var(--paper);
+}
+
+input[readonly] {
+  background: var(--bg);
+  color: var(--ink-soft);
+}
+
 .print-only {
   display: none;
 }
