@@ -19,7 +19,6 @@ export async function renderItems(container, db) {
     <div class="ticket" id="item-form-card">
       <h3 id="item-form-title">إضافة صنف</h3>
       <label>الاسم <input id="new-name" type="text" /></label>
-      <label>الفئة <input id="new-category" type="text" /></label>
       <label>سعر البيع <input id="new-price" type="number" step="0.01" /></label>
       <label>سعر الشراء <input id="new-purchase-price" type="number" step="0.01" /></label>
       <label>الباركود <input id="new-barcode" type="text" /></label>
@@ -36,7 +35,7 @@ export async function renderItems(container, db) {
       ${items
         .map(
           (item) => `<li data-id="${item.id}">
-            ${item.name} — ${item.category} — ${item.price} — ${item.barcode}
+            ${item.name} — ${item.price} — ${item.barcode}
             <button class="edit-item-btn" data-id="${item.id}">تعديل</button>
             <button class="delete-item-btn" data-id="${item.id}">حذف</button>
           </li>`
@@ -47,7 +46,6 @@ export async function renderItems(container, db) {
 
   function fillForm(item) {
     container.querySelector("#new-name").value = item.name;
-    container.querySelector("#new-category").value = item.category;
     container.querySelector("#new-price").value = item.price;
     container.querySelector("#new-purchase-price").value = item.purchase_price ?? "";
     container.querySelector("#new-barcode").value = item.barcode;
@@ -102,7 +100,6 @@ export async function renderItems(container, db) {
 
   container.querySelector("#add-item-btn").addEventListener("click", async () => {
     const name = container.querySelector("#new-name").value.trim();
-    const category = container.querySelector("#new-category").value.trim();
     const price = parseFloat(container.querySelector("#new-price").value);
     const purchasePrice = parseFloat(container.querySelector("#new-purchase-price").value);
     const barcode = container.querySelector("#new-barcode").value.trim();
@@ -111,7 +108,6 @@ export async function renderItems(container, db) {
     if (editingId) {
       const item = items.find((i) => i.id === editingId);
       item.name = name;
-      item.category = category;
       item.price = price;
       item.purchase_price = purchasePrice > 0 ? purchasePrice : undefined;
       await saveItem(db, item);
@@ -132,7 +128,6 @@ export async function renderItems(container, db) {
       id,
       barcode,
       name,
-      category,
       price,
       purchase_price: purchasePrice > 0 ? purchasePrice : undefined,
     });

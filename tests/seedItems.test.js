@@ -17,7 +17,6 @@ test("seed-items.json is a non-empty array of well-formed items with unique ids 
     assert.equal(typeof item.id, "string");
     assert.equal(typeof item.barcode, "string");
     assert.equal(typeof item.name, "string");
-    assert.equal(typeof item.category, "string");
     assert.equal(typeof item.price, "number");
     assert.equal(typeof item.purchase_price, "number");
     ids.add(item.id);
