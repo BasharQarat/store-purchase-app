@@ -6,6 +6,8 @@ import {
   isToday,
   filterItemsByQuery,
   buildExportPayload,
+  findItemByBarcode,
+  buildItemsExportPayload,
 } from "../js/logic.js";
 
 test("nextItemId starts at IT-0001 with no existing ids", () => {
@@ -66,4 +68,48 @@ test("buildExportPayload shapes purchases into an entries array", () => {
   assert.equal(payload.entries[0].itemName, "Pepsi");
   assert.equal(payload.entries[0].amount, 8000);
   assert.ok(payload.exportedAt);
+});
+
+test("findItemByBarcode returns the matching item", () => {
+  const items = [
+    { id: "IT-0001", barcode: "111", name: "A" },
+    { id: "IT-0002", barcode: "222", name: "B" },
+  ];
+  assert.deepEqual(findItemByBarcode(items, "222"), items[1]);
+});
+
+test("findItemByBarcode returns null when no item matches", () => {
+  const items = [{ id: "IT-0001", barcode: "111", name: "A" }];
+  assert.equal(findItemByBarcode(items, "999"), null);
+});
+
+test("buildItemsExportPayload maps items to the seed-items.json shape", () => {
+  const items = [
+    {
+      id: "IT-0001",
+      barcode: "111",
+      name: "A",
+      category: "cat",
+      price: 100,
+      purchase_price: 90,
+    },
+  ];
+  assert.deepEqual(buildItemsExportPayload(items), [
+    {
+      id: "IT-0001",
+      barcode: "111",
+      name: "A",
+      category: "cat",
+      price: 100,
+      purchase_price: 90,
+    },
+  ]);
+});
+
+test("buildItemsExportPayload falls back purchase_price to price when missing", () => {
+  const items = [
+    { id: "IT-0002", barcode: "222", name: "B", category: "cat", price: 50 },
+  ];
+  const [result] = buildItemsExportPayload(items);
+  assert.equal(result.purchase_price, 50);
 });

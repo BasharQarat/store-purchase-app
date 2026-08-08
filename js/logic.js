@@ -41,3 +41,18 @@ export function buildExportPayload(purchases) {
     })),
   };
 }
+
+export function findItemByBarcode(items, barcode) {
+  return items.find((item) => item.barcode === barcode) || null;
+}
+
+export function buildItemsExportPayload(items) {
+  return items.map((item) => ({
+    id: item.id,
+    barcode: item.barcode,
+    name: item.name,
+    category: item.category,
+    price: item.price,
+    purchase_price: item.purchase_price ?? item.price,
+  }));
+}
