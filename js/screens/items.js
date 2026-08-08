@@ -1,5 +1,6 @@
 import { getAllItems, saveItem, deleteItem } from "../db.js";
-import { nextItemId, filterItemsByQuery } from "../logic.js";
+import { nextItemId, filterItemsByQuery, findItemByBarcode } from "../logic.js";
+import { isBarcodeScanSupported, startBarcodeScan } from "../scan.js";
 
 export async function renderItems(container, db) {
   const items = await getAllItems(db);
@@ -22,6 +23,9 @@ export async function renderItems(container, db) {
     <label>الاسم <input id="new-name" type="text" /></label>
     <label>الفئة <input id="new-category" type="text" /></label>
     <label>السعر <input id="new-price" type="number" step="0.01" /></label>
+    <label>الباركود <input id="new-barcode" type="text" /></label>
+    ${isBarcodeScanSupported() ? '<button id="scan-item-btn" type="button">مسح الباركود</button>' : ""}
+    <video id="item-scan-video" playsinline style="display:none; width:100%;"></video>
     <button id="add-item-btn">إضافة</button>
   `;
 
@@ -32,13 +36,48 @@ export async function renderItems(container, db) {
     });
   });
 
+  async function editItemPrompt(item) {
+    const newName = prompt("الاسم:", item.name);
+    const newCategory = prompt("الفئة:", item.category);
+    const newPrice = parseFloat(prompt("السعر:", item.price));
+    if (newName && newPrice > 0) {
+      item.name = newName;
+      item.category = newCategory;
+      item.price = newPrice;
+      await saveItem(db, item);
+      renderItems(container, db);
+    }
+  }
+
+  const scanBtn = container.querySelector("#scan-item-btn");
+  if (scanBtn) {
+    scanBtn.addEventListener("click", async () => {
+      const video = container.querySelector("#item-scan-video");
+      video.style.display = "block";
+      await startBarcodeScan(video, (barcode) => {
+        video.style.display = "none";
+        container.querySelector("#new-barcode").value = barcode;
+      });
+    });
+  }
+
   container.querySelector("#add-item-btn").addEventListener("click", async () => {
     const name = container.querySelector("#new-name").value.trim();
     const category = container.querySelector("#new-category").value.trim();
     const price = parseFloat(container.querySelector("#new-price").value);
+    const barcode = container.querySelector("#new-barcode").value.trim();
     if (!name || !(price > 0)) return;
+
+    if (barcode) {
+      const existing = findItemByBarcode(items, barcode);
+      if (existing) {
+        await editItemPrompt(existing);
+        return;
+      }
+    }
+
     const id = nextItemId(items.map((i) => i.id));
-    await saveItem(db, { id, barcode: id, name, category, price });
+    await saveItem(db, { id, barcode, name, category, price });
     renderItems(container, db);
   });
 
@@ -54,16 +93,7 @@ export async function renderItems(container, db) {
     const editBtn = e.target.closest(".edit-item-btn");
     if (editBtn) {
       const item = items.find((i) => i.id === editBtn.dataset.id);
-      const newName = prompt("الاسم:", item.name);
-      const newCategory = prompt("الفئة:", item.category);
-      const newPrice = parseFloat(prompt("السعر:", item.price));
-      if (newName && newPrice > 0) {
-        item.name = newName;
-        item.category = newCategory;
-        item.price = newPrice;
-        await saveItem(db, item);
-        renderItems(container, db);
-      }
+      await editItemPrompt(item);
     }
   });
 }
