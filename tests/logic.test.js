@@ -63,8 +63,10 @@ test("buildExportPayload shapes purchases into an entries array", () => {
       itemId: "IT-0001",
       itemName: "Pepsi",
       price: 4000,
+      purchase_price: 3500,
       quantity: 2,
       amount: 8000,
+      amount_purchase: 7000,
       timestamp: "2026-08-07T10:00:00.000Z",
     },
   ];
@@ -72,6 +74,8 @@ test("buildExportPayload shapes purchases into an entries array", () => {
   assert.equal(payload.entries.length, 1);
   assert.equal(payload.entries[0].itemName, "Pepsi");
   assert.equal(payload.entries[0].amount, 8000);
+  assert.equal(payload.entries[0].purchase_price, 3500);
+  assert.equal(payload.entries[0].amount_purchase, 7000);
   assert.ok(payload.exportedAt);
 });
 
@@ -94,7 +98,6 @@ test("buildItemsExportPayload maps items to the seed-items.json shape", () => {
       id: "IT-0001",
       barcode: "111",
       name: "A",
-      category: "cat",
       price: 100,
       purchase_price: 90,
     },
@@ -104,7 +107,6 @@ test("buildItemsExportPayload maps items to the seed-items.json shape", () => {
       id: "IT-0001",
       barcode: "111",
       name: "A",
-      category: "cat",
       price: 100,
       purchase_price: 90,
     },
@@ -112,30 +114,54 @@ test("buildItemsExportPayload maps items to the seed-items.json shape", () => {
 });
 
 test("buildItemsExportPayload falls back purchase_price to price when missing", () => {
-  const items = [
-    { id: "IT-0002", barcode: "222", name: "B", category: "cat", price: 50 },
-  ];
+  const items = [{ id: "IT-0002", barcode: "222", name: "B", price: 50 }];
   const [result] = buildItemsExportPayload(items);
   assert.equal(result.purchase_price, 50);
 });
 
 test("addOrIncrementCartLine adds a new line for an unseen item", () => {
+  const cart = addOrIncrementCartLine([], {
+    id: "IT-0001",
+    name: "Pepsi",
+    price: 4000,
+    purchase_price: 3500,
+  });
+  assert.deepEqual(cart, [
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, purchase_price: 3500, quantity: 1 },
+  ]);
+});
+
+test("addOrIncrementCartLine falls back purchase_price to price when the item has none", () => {
   const cart = addOrIncrementCartLine([], { id: "IT-0001", name: "Pepsi", price: 4000 });
-  assert.deepEqual(cart, [{ itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 1 }]);
+  assert.equal(cart[0].purchase_price, 4000);
 });
 
 test("addOrIncrementCartLine increments quantity when the item is already in the cart", () => {
-  const cart = [{ itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 1 }];
-  const result = addOrIncrementCartLine(cart, { id: "IT-0001", name: "Pepsi", price: 4000 });
-  assert.deepEqual(result, [{ itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 2 }]);
+  const cart = [
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, purchase_price: 3500, quantity: 1 },
+  ];
+  const result = addOrIncrementCartLine(cart, {
+    id: "IT-0001",
+    name: "Pepsi",
+    price: 4000,
+    purchase_price: 3500,
+  });
+  assert.deepEqual(result, [
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, purchase_price: 3500, quantity: 2 },
+  ]);
 });
 
 test("addOrIncrementCartLine does not touch other lines", () => {
   const cart = [
-    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 1 },
-    { itemId: "IT-0002", itemName: "Chips", price: 6000, quantity: 1 },
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, purchase_price: 3500, quantity: 1 },
+    { itemId: "IT-0002", itemName: "Chips", price: 6000, purchase_price: 5000, quantity: 1 },
   ];
-  const result = addOrIncrementCartLine(cart, { id: "IT-0002", name: "Chips", price: 6000 });
+  const result = addOrIncrementCartLine(cart, {
+    id: "IT-0002",
+    name: "Chips",
+    price: 6000,
+    purchase_price: 5000,
+  });
   assert.equal(result[0].quantity, 1);
   assert.equal(result[1].quantity, 2);
 });
@@ -169,11 +195,15 @@ test("cartTotal sums amount across all lines", () => {
 });
 
 test("buildPurchasesFromCart shapes each line into a full purchase record", () => {
-  const cart = [{ itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 2 }];
+  const cart = [
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, purchase_price: 3500, quantity: 2 },
+  ];
   const purchases = buildPurchasesFromCart(cart, "2026-08-08T10:00:00.000Z");
   assert.equal(purchases.length, 1);
   assert.equal(typeof purchases[0].id, "string");
   assert.equal(purchases[0].itemId, "IT-0001");
   assert.equal(purchases[0].amount, 8000);
+  assert.equal(purchases[0].purchase_price, 3500);
+  assert.equal(purchases[0].amount_purchase, 7000);
   assert.equal(purchases[0].timestamp, "2026-08-08T10:00:00.000Z");
 });

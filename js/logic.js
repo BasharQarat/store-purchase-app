@@ -36,7 +36,9 @@ export function buildExportPayload(purchases) {
       itemName: p.itemName,
       quantity: p.quantity,
       price: p.price,
+      purchase_price: p.purchase_price,
       amount: p.amount,
+      amount_purchase: p.amount_purchase,
       timestamp: p.timestamp,
     })),
   };
@@ -51,7 +53,6 @@ export function buildItemsExportPayload(items) {
     id: item.id,
     barcode: item.barcode,
     name: item.name,
-    category: item.category,
     price: item.price,
     purchase_price: item.purchase_price ?? item.price,
   }));
@@ -60,7 +61,16 @@ export function buildItemsExportPayload(items) {
 export function addOrIncrementCartLine(cart, item) {
   const idx = cart.findIndex((line) => line.itemId === item.id);
   if (idx === -1) {
-    return [...cart, { itemId: item.id, itemName: item.name, price: item.price, quantity: 1 }];
+    return [
+      ...cart,
+      {
+        itemId: item.id,
+        itemName: item.name,
+        price: item.price,
+        purchase_price: item.purchase_price ?? item.price,
+        quantity: 1,
+      },
+    ];
   }
   return cart.map((line, i) => (i === idx ? { ...line, quantity: line.quantity + 1 } : line));
 }
@@ -83,8 +93,10 @@ export function buildPurchasesFromCart(cart, timestamp = new Date().toISOString(
     itemId: line.itemId,
     itemName: line.itemName,
     price: line.price,
+    purchase_price: line.purchase_price,
     quantity: line.quantity,
     amount: calcAmount(line.quantity, line.price),
+    amount_purchase: calcAmount(line.quantity, line.purchase_price),
     timestamp,
   }));
 }
