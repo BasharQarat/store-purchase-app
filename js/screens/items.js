@@ -1,12 +1,19 @@
 import { getAllItems, saveItem, deleteItem } from "../db.js";
-import { nextItemId, filterItemsByQuery, findItemByBarcode } from "../logic.js";
+import {
+  nextItemId,
+  filterItemsByQuery,
+  findItemByBarcode,
+  buildItemsExportPayload,
+} from "../logic.js";
 import { isBarcodeScanSupported, startBarcodeScan } from "../scan.js";
+import { triggerDownload } from "../download.js";
 
 export async function renderItems(container, db) {
   const items = await getAllItems(db);
 
   container.innerHTML = `
     <h2>الأصناف</h2>
+    <button id="export-items-btn" type="button">تصدير JSON</button>
     <input id="item-search" type="text" placeholder="ابحث..." />
     <ul id="items-list">
       ${items
@@ -34,6 +41,16 @@ export async function renderItems(container, db) {
     container.querySelectorAll("#items-list li").forEach((li) => {
       li.style.display = matches.some((m) => m.id === li.dataset.id) ? "" : "none";
     });
+  });
+
+  container.querySelector("#export-items-btn").addEventListener("click", () => {
+    const payload = buildItemsExportPayload(items);
+    const file = new File(
+      [JSON.stringify(payload, null, 2)],
+      "seed-items.json",
+      { type: "application/json" }
+    );
+    triggerDownload(file);
   });
 
   async function editItemPrompt(item) {
