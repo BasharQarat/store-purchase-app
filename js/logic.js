@@ -56,3 +56,35 @@ export function buildItemsExportPayload(items) {
     purchase_price: item.purchase_price ?? item.price,
   }));
 }
+
+export function addOrIncrementCartLine(cart, item) {
+  const idx = cart.findIndex((line) => line.itemId === item.id);
+  if (idx === -1) {
+    return [...cart, { itemId: item.id, itemName: item.name, price: item.price, quantity: 1 }];
+  }
+  return cart.map((line, i) => (i === idx ? { ...line, quantity: line.quantity + 1 } : line));
+}
+
+export function updateCartLine(cart, itemId, patch) {
+  return cart.map((line) => (line.itemId === itemId ? { ...line, ...patch } : line));
+}
+
+export function removeCartLine(cart, itemId) {
+  return cart.filter((line) => line.itemId !== itemId);
+}
+
+export function cartTotal(cart) {
+  return cart.reduce((sum, line) => sum + calcAmount(line.quantity, line.price), 0);
+}
+
+export function buildPurchasesFromCart(cart, timestamp = new Date().toISOString()) {
+  return cart.map((line) => ({
+    id: crypto.randomUUID(),
+    itemId: line.itemId,
+    itemName: line.itemName,
+    price: line.price,
+    quantity: line.quantity,
+    amount: calcAmount(line.quantity, line.price),
+    timestamp,
+  }));
+}

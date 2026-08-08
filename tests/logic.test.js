@@ -8,6 +8,11 @@ import {
   buildExportPayload,
   findItemByBarcode,
   buildItemsExportPayload,
+  addOrIncrementCartLine,
+  updateCartLine,
+  removeCartLine,
+  cartTotal,
+  buildPurchasesFromCart,
 } from "../js/logic.js";
 
 test("nextItemId starts at IT-0001 with no existing ids", () => {
@@ -112,4 +117,63 @@ test("buildItemsExportPayload falls back purchase_price to price when missing", 
   ];
   const [result] = buildItemsExportPayload(items);
   assert.equal(result.purchase_price, 50);
+});
+
+test("addOrIncrementCartLine adds a new line for an unseen item", () => {
+  const cart = addOrIncrementCartLine([], { id: "IT-0001", name: "Pepsi", price: 4000 });
+  assert.deepEqual(cart, [{ itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 1 }]);
+});
+
+test("addOrIncrementCartLine increments quantity when the item is already in the cart", () => {
+  const cart = [{ itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 1 }];
+  const result = addOrIncrementCartLine(cart, { id: "IT-0001", name: "Pepsi", price: 4000 });
+  assert.deepEqual(result, [{ itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 2 }]);
+});
+
+test("addOrIncrementCartLine does not touch other lines", () => {
+  const cart = [
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 1 },
+    { itemId: "IT-0002", itemName: "Chips", price: 6000, quantity: 1 },
+  ];
+  const result = addOrIncrementCartLine(cart, { id: "IT-0002", name: "Chips", price: 6000 });
+  assert.equal(result[0].quantity, 1);
+  assert.equal(result[1].quantity, 2);
+});
+
+test("updateCartLine patches only the matching line", () => {
+  const cart = [
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 1 },
+    { itemId: "IT-0002", itemName: "Chips", price: 6000, quantity: 1 },
+  ];
+  const result = updateCartLine(cart, "IT-0001", { quantity: 3 });
+  assert.equal(result[0].quantity, 3);
+  assert.equal(result[1].quantity, 1);
+});
+
+test("removeCartLine drops the matching line", () => {
+  const cart = [
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 1 },
+    { itemId: "IT-0002", itemName: "Chips", price: 6000, quantity: 1 },
+  ];
+  assert.deepEqual(removeCartLine(cart, "IT-0001"), [
+    { itemId: "IT-0002", itemName: "Chips", price: 6000, quantity: 1 },
+  ]);
+});
+
+test("cartTotal sums amount across all lines", () => {
+  const cart = [
+    { itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 2 },
+    { itemId: "IT-0002", itemName: "Chips", price: 6000, quantity: 1 },
+  ];
+  assert.equal(cartTotal(cart), 14000);
+});
+
+test("buildPurchasesFromCart shapes each line into a full purchase record", () => {
+  const cart = [{ itemId: "IT-0001", itemName: "Pepsi", price: 4000, quantity: 2 }];
+  const purchases = buildPurchasesFromCart(cart, "2026-08-08T10:00:00.000Z");
+  assert.equal(purchases.length, 1);
+  assert.equal(typeof purchases[0].id, "string");
+  assert.equal(purchases[0].itemId, "IT-0001");
+  assert.equal(purchases[0].amount, 8000);
+  assert.equal(purchases[0].timestamp, "2026-08-08T10:00:00.000Z");
 });
