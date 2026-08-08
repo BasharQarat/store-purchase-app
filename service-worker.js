@@ -1,4 +1,4 @@
-const CACHE_NAME = "store-purchase-app-v3";
+const CACHE_NAME = "store-purchase-app-v4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const ASSETS = [
   "./data/seed-items.json",
   "./js/app.js",
   "./js/db.js",
+  "./js/download.js",
   "./js/logic.js",
   "./js/scan.js",
   "./js/screens/logPurchase.js",
