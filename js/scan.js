@@ -3,7 +3,9 @@ export function isBarcodeScanSupported() {
 }
 
 export async function startBarcodeScan(videoElement, onDetected) {
-  const detector = new BarcodeDetector({ formats: ["code_128"] });
+  const detector = new BarcodeDetector({
+    formats: ["code_128", "ean_13", "ean_8", "upc_a", "upc_e"],
+  });
   const stream = await navigator.mediaDevices.getUserMedia({
     video: { facingMode: "environment" },
   });
