@@ -1,43 +1,38 @@
 export function isBarcodeScanSupported() {
-  return typeof window !== "undefined" && "BarcodeDetector" in window;
+  return (
+    typeof navigator !== "undefined" &&
+    !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+  );
 }
 
 export async function startBarcodeScan(videoElement, onDetected) {
-  const detector = new BarcodeDetector({
-    formats: ["code_128", "ean_13", "ean_8", "upc_a", "upc_e"],
-  });
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "environment" },
-  });
-  videoElement.srcObject = stream;
-  await videoElement.play();
+  const hints = new Map();
+  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+    ZXing.BarcodeFormat.CODE_128,
+    ZXing.BarcodeFormat.EAN_13,
+    ZXing.BarcodeFormat.EAN_8,
+    ZXing.BarcodeFormat.UPC_A,
+    ZXing.BarcodeFormat.UPC_E,
+  ]);
+  const reader = new ZXing.BrowserMultiFormatReader(hints);
 
   let stopped = false;
 
-  function stopStream() {
-    stream.getTracks().forEach((track) => track.stop());
-  }
-
-  async function tick() {
-    if (stopped) return;
-    try {
-      const barcodes = await detector.detect(videoElement);
-      if (barcodes.length > 0) {
-        stopped = true;
-        stopStream();
-        onDetected(barcodes[0].rawValue);
-        return;
-      }
-    } catch {
-      // A transient bad frame can throw; keep scanning.
+  await reader.decodeFromConstraints(
+    { video: { facingMode: "environment" } },
+    videoElement,
+    (result) => {
+      if (stopped || !result) return;
+      stopped = true;
+      reader.reset();
+      onDetected(result.getText());
     }
-    requestAnimationFrame(tick);
-  }
-
-  tick();
+  );
 
   return function cancelScan() {
-    stopped = true;
-    stopStream();
+    if (!stopped) {
+      stopped = true;
+      reader.reset();
+    }
   };
 }
