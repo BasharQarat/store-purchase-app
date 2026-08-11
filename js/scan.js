@@ -1,8 +1,5 @@
 export function isBarcodeScanSupported() {
-  return (
-    typeof navigator !== "undefined" &&
-    !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
-  );
+  return typeof window !== "undefined" && "BarcodeDetector" in window;
 }
 
 function playBeep(audioCtx) {
@@ -26,34 +23,43 @@ export async function startBarcodeScan(videoElement, onDetected) {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   const audioCtx = AudioContextClass ? new AudioContextClass() : null;
 
-  const hints = new Map();
-  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-    ZXing.BarcodeFormat.CODE_128,
-    ZXing.BarcodeFormat.EAN_13,
-    ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.UPC_A,
-    ZXing.BarcodeFormat.UPC_E,
-  ]);
-  const reader = new ZXing.BrowserMultiFormatReader(hints);
+  const detector = new BarcodeDetector({
+    formats: ["code_128", "ean_13", "ean_8", "upc_a", "upc_e"],
+  });
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "environment" },
+  });
+  videoElement.srcObject = stream;
+  await videoElement.play();
 
   let stopped = false;
 
-  await reader.decodeFromConstraints(
-    { video: { facingMode: "environment" } },
-    videoElement,
-    (result) => {
-      if (stopped || !result) return;
-      stopped = true;
-      reader.reset();
-      if (audioCtx) playBeep(audioCtx);
-      onDetected(result.getText());
+  function stopStream() {
+    stream.getTracks().forEach((track) => track.stop());
+  }
+
+  async function tick() {
+    if (stopped) return;
+    try {
+      const barcodes = await detector.detect(videoElement);
+      if (barcodes.length > 0) {
+        stopped = true;
+        stopStream();
+        if (audioCtx) playBeep(audioCtx);
+        onDetected(barcodes[0].rawValue);
+        return;
+      }
+    } catch {
+      // A transient bad frame can throw; keep scanning.
     }
-  );
+    requestAnimationFrame(tick);
+  }
+
+  tick();
 
   return function cancelScan() {
-    if (!stopped) {
-      stopped = true;
-      reader.reset();
-    }
+    stopped = true;
+    stopStream();
+    if (audioCtx) audioCtx.close();
   };
 }

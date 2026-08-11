@@ -1,4 +1,4 @@
-const CACHE_NAME = "store-purchase-app-v7";
+const CACHE_NAME = "store-purchase-app-v8";
 const ASSETS = [
   "./",
   "./index.html",
@@ -16,7 +16,6 @@ const ASSETS = [
   "./js/screens/items.js",
   "./js/screens/labels.js",
   "./vendor/jsbarcode/JsBarcode.all.min.js",
-  "./vendor/zxing/zxing.min.js",
   "./vendor/fonts/cairo-700-arabic.woff2",
   "./vendor/fonts/cairo-700-latin.woff2",
   "./vendor/fonts/tajawal-400-arabic.woff2",
