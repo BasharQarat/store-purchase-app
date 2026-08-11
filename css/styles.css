@@ -171,7 +171,8 @@ input {
 }
 
 input:focus-visible {
-  outline: none;
+  outline: 3px solid var(--teal);
+  outline-offset: 1px;
   border-color: var(--teal);
 }
 
@@ -351,6 +352,7 @@ label {
 
 .cart-line-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
   gap: 14px;
@@ -410,7 +412,7 @@ label {
   color: var(--paper);
 }
 
-#cart-empty {
+.empty-hint {
   color: var(--ink-soft);
   font-size: 0.9rem;
 }

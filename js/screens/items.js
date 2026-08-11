@@ -31,6 +31,7 @@ export async function renderItems(container, db) {
     </div>
 
     <input id="item-search" type="text" placeholder="ابحث..." />
+    ${items.length === 0 ? '<p class="empty-hint">لا توجد أصناف بعد — أضف أول صنف أعلاه</p>' : ""}
     <ul id="items-list">
       ${items
         .map(

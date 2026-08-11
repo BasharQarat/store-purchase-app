@@ -11,6 +11,7 @@ export async function renderToday(container, db) {
 
   container.innerHTML = `
     <h2>اليوم</h2>
+    ${todays.length === 0 ? '<p class="empty-hint">لا توجد مشتريات مسجلة اليوم بعد</p>' : ""}
     <ul id="today-list">
       ${todays
         .map(

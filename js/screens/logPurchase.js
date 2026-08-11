@@ -26,7 +26,7 @@ export async function renderLogPurchase(container, db) {
     <p id="not-found" style="display:none;">صنف غير معروف</p>
 
     <h3>السلة</h3>
-    <p id="cart-empty">امسح أو ابحث عن صنف لإضافته</p>
+    <p id="cart-empty" class="empty-hint">امسح أو ابحث عن صنف لإضافته</p>
     <ul id="cart-list"></ul>
     <p id="cart-total-row" style="display:none;">الإجمالي: <span class="amount" id="cart-total">0</span></p>
     <button id="save-cart-btn" style="display:none;">حفظ الكل</button>
