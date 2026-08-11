@@ -33,6 +33,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: contain;
 }
 
 h2 {
@@ -78,6 +79,7 @@ button {
   background: var(--saffron);
   color: var(--ink);
   cursor: pointer;
+  touch-action: manipulation;
   transition: transform 0.08s ease, background 0.15s ease;
 }
 
@@ -238,6 +240,7 @@ label {
   padding: 12px 6px;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 #search-results li:hover {
@@ -371,7 +374,7 @@ label {
 .qty-stepper {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .qty-stepper button {
