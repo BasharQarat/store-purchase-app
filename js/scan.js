@@ -1,5 +1,25 @@
+const CAMERA_FACING_KEY = "scanCameraFacing";
+
 export function isBarcodeScanSupported() {
   return typeof window !== "undefined" && "BarcodeDetector" in window;
+}
+
+export function getPreferredCameraFacing() {
+  try {
+    return localStorage.getItem(CAMERA_FACING_KEY) === "user" ? "user" : "environment";
+  } catch {
+    return "environment";
+  }
+}
+
+export function togglePreferredCameraFacing() {
+  const next = getPreferredCameraFacing() === "environment" ? "user" : "environment";
+  try {
+    localStorage.setItem(CAMERA_FACING_KEY, next);
+  } catch {
+    // localStorage unavailable (private mode, etc.) - caller still gets the toggled value.
+  }
+  return next;
 }
 
 function playBeep(audioCtx) {
@@ -15,7 +35,7 @@ function playBeep(audioCtx) {
   oscillator.onended = () => audioCtx.close();
 }
 
-export async function startBarcodeScan(videoElement, onDetected) {
+export async function startBarcodeScan(videoElement, onDetected, facingMode = getPreferredCameraFacing()) {
   // Created up front (in the same tick as the button's click handler,
   // before any await) so browser autoplay policies treat it as unlocked
   // by the user gesture — creating it later, at detection time, can get
@@ -27,7 +47,7 @@ export async function startBarcodeScan(videoElement, onDetected) {
     formats: ["code_128", "ean_13", "ean_8", "upc_a", "upc_e"],
   });
   const stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "environment" },
+    video: { facingMode },
   });
   videoElement.srcObject = stream;
   await videoElement.play();

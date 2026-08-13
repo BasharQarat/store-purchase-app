@@ -8,7 +8,11 @@ import {
   cartTotal,
   buildPurchasesFromCart,
 } from "../logic.js";
-import { isBarcodeScanSupported, startBarcodeScan } from "../scan.js";
+import {
+  isBarcodeScanSupported,
+  startBarcodeScan,
+  togglePreferredCameraFacing,
+} from "../scan.js";
 
 // Module-level so the in-progress cart survives switching tabs and back —
 // renderLogPurchase re-runs its whole body (including a fresh innerHTML)
@@ -21,6 +25,7 @@ export async function renderLogPurchase(container, db) {
     <h2>تسجيل شراء</h2>
     ${isBarcodeScanSupported() ? '<button id="scan-btn">مسح الباركود</button>' : ""}
     <video id="scan-video" playsinline style="display:none; width:100%;"></video>
+    ${isBarcodeScanSupported() ? '<button id="switch-camera-btn" type="button" style="display:none;">تبديل الكاميرا</button>' : ""}
     <input id="search-input" type="text" placeholder="ابحث عن صنف..." />
     <ul id="search-results"></ul>
     <p id="not-found" style="display:none;">صنف غير معروف</p>
@@ -103,20 +108,37 @@ export async function renderLogPurchase(container, db) {
     if (item) addItemToCart(item);
   });
 
+  let cancelActiveScan = null;
+
+  async function runScan() {
+    const video = container.querySelector("#scan-video");
+    const switchBtn = container.querySelector("#switch-camera-btn");
+    video.style.display = "block";
+    if (switchBtn) switchBtn.style.display = "block";
+    cancelActiveScan = await startBarcodeScan(video, async (barcode) => {
+      video.style.display = "none";
+      if (switchBtn) switchBtn.style.display = "none";
+      cancelActiveScan = null;
+      const item = await getItemByBarcode(db, barcode);
+      if (item) {
+        addItemToCart(item);
+      } else {
+        container.querySelector("#not-found").style.display = "block";
+      }
+    });
+  }
+
   const scanBtn = container.querySelector("#scan-btn");
   if (scanBtn) {
-    scanBtn.addEventListener("click", async () => {
-      const video = container.querySelector("#scan-video");
-      video.style.display = "block";
-      await startBarcodeScan(video, async (barcode) => {
-        video.style.display = "none";
-        const item = await getItemByBarcode(db, barcode);
-        if (item) {
-          addItemToCart(item);
-        } else {
-          container.querySelector("#not-found").style.display = "block";
-        }
-      });
+    scanBtn.addEventListener("click", runScan);
+  }
+
+  const switchCameraBtn = container.querySelector("#switch-camera-btn");
+  if (switchCameraBtn) {
+    switchCameraBtn.addEventListener("click", async () => {
+      if (cancelActiveScan) cancelActiveScan();
+      togglePreferredCameraFacing();
+      await runScan();
     });
   }
 

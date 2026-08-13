@@ -1,4 +1,4 @@
-const CACHE_NAME = "store-purchase-app-v10";
+const CACHE_NAME = "store-purchase-app-v11";
 const ASSETS = [
   "./",
   "./index.html",

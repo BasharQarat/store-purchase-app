@@ -5,7 +5,11 @@ import {
   findItemByBarcode,
   buildItemsExportPayload,
 } from "../logic.js";
-import { isBarcodeScanSupported, startBarcodeScan } from "../scan.js";
+import {
+  isBarcodeScanSupported,
+  startBarcodeScan,
+  togglePreferredCameraFacing,
+} from "../scan.js";
 import { triggerDownload } from "../download.js";
 
 export async function renderItems(container, db) {
@@ -24,6 +28,7 @@ export async function renderItems(container, db) {
       <label>الباركود <input id="new-barcode" type="text" /></label>
       ${isBarcodeScanSupported() ? '<button id="scan-item-btn" type="button">مسح الباركود</button>' : ""}
       <video id="item-scan-video" playsinline style="display:none; width:100%;"></video>
+      ${isBarcodeScanSupported() ? '<button id="switch-item-camera-btn" type="button" style="display:none;">تبديل الكاميرا</button>' : ""}
       <div class="item-form-actions">
         <button id="add-item-btn" type="button">إضافة</button>
         <button id="cancel-edit-btn" type="button" style="display:none;">إلغاء</button>
@@ -79,19 +84,36 @@ export async function renderItems(container, db) {
     triggerDownload(file);
   });
 
+  let cancelActiveScan = null;
+
+  async function runScan() {
+    const video = container.querySelector("#item-scan-video");
+    const switchBtn = container.querySelector("#switch-item-camera-btn");
+    video.style.display = "block";
+    if (switchBtn) switchBtn.style.display = "block";
+    cancelActiveScan = await startBarcodeScan(video, (barcode) => {
+      video.style.display = "none";
+      if (switchBtn) switchBtn.style.display = "none";
+      cancelActiveScan = null;
+      container.querySelector("#new-barcode").value = barcode;
+      const existing = findItemByBarcode(items, barcode);
+      if (existing) {
+        enterEditMode(existing);
+      }
+    });
+  }
+
   const scanBtn = container.querySelector("#scan-item-btn");
   if (scanBtn) {
-    scanBtn.addEventListener("click", async () => {
-      const video = container.querySelector("#item-scan-video");
-      video.style.display = "block";
-      await startBarcodeScan(video, (barcode) => {
-        video.style.display = "none";
-        container.querySelector("#new-barcode").value = barcode;
-        const existing = findItemByBarcode(items, barcode);
-        if (existing) {
-          enterEditMode(existing);
-        }
-      });
+    scanBtn.addEventListener("click", runScan);
+  }
+
+  const switchCameraBtn = container.querySelector("#switch-item-camera-btn");
+  if (switchCameraBtn) {
+    switchCameraBtn.addEventListener("click", async () => {
+      if (cancelActiveScan) cancelActiveScan();
+      togglePreferredCameraFacing();
+      await runScan();
     });
   }
 

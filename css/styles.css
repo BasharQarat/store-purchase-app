@@ -105,6 +105,22 @@ button:hover {
   margin-bottom: 12px;
 }
 
+#switch-camera-btn,
+#switch-item-camera-btn {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border-color: var(--ink-soft);
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+
+#switch-camera-btn:hover,
+#switch-item-camera-btn:hover {
+  background: var(--ink-soft);
+  color: var(--paper);
+}
+
 .edit-btn,
 .edit-item-btn {
   background: transparent;
