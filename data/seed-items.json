@@ -1,58 +1,73 @@
 [
   {
     "id": "IT-0001",
-    "barcode": "380983618854",
-    "name": "شيبس ليز حار",
-    "price": 6000,
-    "purchase_price": 6000
+    "barcode": "1",
+    "name": "بسكوت 1000",
+    "price": 1000,
+    "purchase_price": 900
   },
   {
     "id": "IT-0002",
-    "barcode": "044232222216",
-    "name": "بيبسي علبة",
-    "price": 4000,
-    "purchase_price": 4000
+    "barcode": "2",
+    "name": "بسكوت 2000",
+    "price": 2000,
+    "purchase_price": 1800
   },
   {
     "id": "IT-0003",
-    "barcode": "628194936624",
-    "name": "خبز توست",
+    "barcode": "3",
+    "name": "بسكوت 3000",
     "price": 3000,
-    "purchase_price": 3000
+    "purchase_price": 2700
   },
   {
     "id": "IT-0004",
-    "barcode": "970911359661",
-    "name": "حليب صامد لتر",
-    "price": 5000,
-    "purchase_price": 5000
+    "barcode": "4",
+    "name": "بسكوت 4000",
+    "price": 4000,
+    "purchase_price": 3600
   },
   {
     "id": "IT-0005",
-    "barcode": "760684953115",
-    "name": "بسكويت أوريو",
-    "price": 3500,
-    "purchase_price": 3500
+    "barcode": "5",
+    "name": "بسكوت 5000",
+    "price": 5000,
+    "purchase_price": 4500
   },
   {
     "id": "IT-0006",
-    "barcode": "491281913285",
-    "name": "مرتديلا زينة",
-    "price": 12000,
-    "purchase_price": 12000
+    "barcode": "6",
+    "name": "شيبس 1000",
+    "price": 1000,
+    "purchase_price": 900
   },
   {
     "id": "IT-0007",
-    "barcode": "963355813787",
-    "name": "مرتديلا هنا",
-    "price": 16000,
-    "purchase_price": 16000
+    "barcode": "7",
+    "name": "شيبس 2000",
+    "price": 2000,
+    "purchase_price": 1800
   },
   {
     "id": "IT-0008",
-    "barcode": "044726297065",
-    "name": "طون",
-    "price": 13000,
-    "purchase_price": 13000
+    "barcode": "8",
+    "name": "شيبس 3000",
+    "price": 3000,
+    "purchase_price": 2700
+  },
+  {
+    "id": "IT-0009",
+    "barcode": "9",
+    "name": "شيبس 4000",
+    "price": 4000,
+    "purchase_price": 3600
+  },
+  {
+    "id": "IT-0010",
+    "barcode": "10",
+    "name": "شيبس 5000",
+    "price": 5000,
+    "purchase_price": 4500
   }
+
 ]
