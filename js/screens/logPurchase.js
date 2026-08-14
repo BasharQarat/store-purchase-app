@@ -30,6 +30,23 @@ export async function renderLogPurchase(container, db) {
     <ul id="search-results"></ul>
     <p id="not-found" style="display:none;">صنف غير معروف</p>
 
+    <div id="quick-picks">
+      ${[0, 1]
+        .map((rowIndex) => {
+          const half = Math.ceil(items.length / 2);
+          const rowItems = rowIndex === 0 ? items.slice(0, half) : items.slice(half);
+          return `<div class="quick-pick-row">
+            ${rowItems
+              .map(
+                (item) =>
+                  `<button type="button" class="quick-pick-chip" data-id="${item.id}">${item.name}</button>`
+              )
+              .join("")}
+          </div>`;
+        })
+        .join("")}
+    </div>
+
     <h3>السلة</h3>
     <p id="cart-empty" class="empty-hint">امسح أو ابحث عن صنف لإضافته</p>
     <ul id="cart-list"></ul>
@@ -105,6 +122,13 @@ export async function renderLogPurchase(container, db) {
     const li = e.target.closest("li[data-id]");
     if (!li) return;
     const item = items.find((i) => i.id === li.dataset.id);
+    if (item) addItemToCart(item);
+  });
+
+  container.querySelector("#quick-picks").addEventListener("click", (e) => {
+    const chip = e.target.closest(".quick-pick-chip");
+    if (!chip) return;
+    const item = items.find((i) => i.id === chip.dataset.id);
     if (item) addItemToCart(item);
   });
 

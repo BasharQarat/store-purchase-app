@@ -236,6 +236,41 @@ label {
   font-weight: 700;
 }
 
+/* Quick-pick item chips (horizontal sliders, 2 rows) */
+
+#quick-picks {
+  margin: 4px 0 16px;
+}
+
+.quick-pick-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+
+.quick-pick-row:first-child {
+  margin-bottom: 4px;
+}
+
+.quick-pick-chip {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  white-space: nowrap;
+  min-height: 44px;
+  background: var(--paper);
+  border: 2px solid var(--line);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.quick-pick-chip:hover {
+  background: var(--saffron);
+  border-color: var(--saffron);
+}
+
 /* Search results / plain reference lists */
 
 #search-results,
